@@ -1,16 +1,27 @@
 // src/components/Chatbot.jsx
-// Placeholder for the main chatbot interface.
+// Main chatbot interface, now integrated with AuthContext for user info and logout.
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for logout redirect
+import { useAuth } from '../context/AuthContext'; // Import useAuth hook
 
 function Chatbot() {
+  const { currentUser, logout } = useAuth(); // Get current user and logout function
+  const navigate = useNavigate(); // Get navigate function
+
+  const handleLogout = () => {
+    logout(); // Call the logout function from AuthContext
+    navigate('/login'); // Redirect to the login page after logout
+  };
+
   return (
     <div className="chatbot-main-container">
       <div className="chatbot-header">
         <h1 className="chatbot-title">AI Chat Agent</h1>
-        <Link to="/" className="button button-secondary button-small">
-          Go Home
-        </Link>
+        {/* Display user's name if logged in */}
+        {currentUser && <span className="user-display">Logged in as: {currentUser.name || currentUser.email}</span>}
+        <button onClick={handleLogout} className="button button-secondary button-small">
+          Logout
+        </button>
       </div>
       <div className="chatbot-messages-display">
         <p className="chatbot-placeholder-message">

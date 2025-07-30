@@ -1,7 +1,6 @@
 // src/App.jsx
-// This is the main application component, now handling routing.
+// This is the main application component, now handling routing and authentication context.
 import React from 'react';
-// Import necessary components from react-router-dom
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 // Import our new page components
@@ -9,18 +8,14 @@ import Home from './components/Home';
 import Login from './components/Login';
 import Chatbot from './components/Chatbot';
 
-// For now, we'll keep the AuthProvider and PrivateRoute commented out.
-// These will be introduced in Step 3 when we implement authentication.
-// import { AuthProvider, useAuth } from './context/AuthContext';
+// Import AuthProvider and useAuth from our context
+import { AuthProvider, useAuth } from './context/AuthContext';
 
-/*
-// Placeholder for PrivateRoute component (will be used in Step 3)
+// PrivateRoute component to protect routes requiring authentication
 const PrivateRoute = ({ children }) => {
-  // const { currentUser, loading } = useAuth();
-  // For now, always allow access to chat for demonstration
-  const isAuthenticated = true; // Simulate logged in for now
-  const loading = false; // Simulate not loading for now
+  const { currentUser, loading } = useAuth(); // Get current user and loading state from context
 
+  // Show a loading spinner or message while authentication state is being determined
   if (loading) {
     return (
       <div className="loading-screen">
@@ -30,37 +25,37 @@ const PrivateRoute = ({ children }) => {
     );
   }
 
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
+  // If user is not logged in, redirect to login page
+  // `replace` prop ensures the login page replaces the current entry in history,
+  // preventing the user from going back to the protected page with the browser's back button.
+  return currentUser ? children : <Navigate to="/login" replace />;
 };
-*/
 
 function App() {
   return (
     // Router wraps the entire application to enable routing
     <Router>
-      {/* AuthProvider will go here in Step 3 */}
-      {/* <AuthProvider> */}
+      {/* AuthProvider wraps the entire application to provide authentication context */}
+      <AuthProvider>
         <Routes>
           {/* Define public routes */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
 
-          {/* Define a route for the chatbot.
-              It will be protected by PrivateRoute in Step 3. */}
-          <Route path="/chat" element={<Chatbot />} />
-          {/* <Route
+          {/* Protected route for the chatbot */}
+          <Route
             path="/chat"
             element={
               <PrivateRoute>
                 <Chatbot />
               </PrivateRoute>
             }
-          /> */}
+          />
 
           {/* Catch-all route for unmatched paths, redirects to Home */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      {/* </AuthProvider> */}
+      </AuthProvider>
     </Router>
   );
 }
